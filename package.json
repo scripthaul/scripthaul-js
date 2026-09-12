@@ -1,0 +1,37 @@
+{
+  "name": "scripthaul",
+  "version": "0.1.0",
+  "description": "Thin JavaScript client for the ScriptHaul transcript API",
+  "type": "module",
+  "exports": "./src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18.20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://api.scripthaul.com/docs",
+  "bugs": {
+    "url": "https://github.com/scripthaul/scripthaul-js/issues",
+    "email": "support@scripthaul.com"
+  },
+  "keywords": [
+    "youtube",
+    "transcript",
+    "captions",
+    "api"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scripthaul/scripthaul-js.git"
+  }
+}
