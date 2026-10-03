@@ -475,7 +475,7 @@ export class ScriptHaul {
     });
     const query = queryString({
       video_id: videoId, format: options.format, language: options.language,
-      fallback: options.fallback, raw: options.raw, fresh: options.fresh,
+      fallback: options.fallback, raw: options.raw, fresh: options.fresh, translate: options.translate,
     });
     return this._request('GET', `/v1/transcript?${query}`, { poll202: true });
   }

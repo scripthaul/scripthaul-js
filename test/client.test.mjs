@@ -313,6 +313,63 @@ test('never forwards credential-like options in the query string', async () => {
   assert.equal(requested.searchParams.has('api_key'), false);
 });
 
+test('transcript sends explicit translate values as boolean query strings', async () => {
+  const calls = [];
+  const client = new ScriptHaul({
+    apiKey: 'sh_test_unit_fixture',
+    fetch: async (url, init) => {
+      calls.push({ url: new URL(url), method: init.method });
+      return json(200, { ok: true, video: { id: 'dQw4w9WgXcQ' } });
+    },
+  });
+  for (const translate of [true, false]) {
+    await client.transcript('dQw4w9WgXcQ', { language: 'es', translate });
+  }
+  assert.deepEqual(calls.map(({ url, method }) => ({
+    method, path: url.pathname, query: Object.fromEntries(url.searchParams),
+  })), [
+    { method: 'GET', path: '/v1/transcript', query: { video_id: 'dQw4w9WgXcQ', language: 'es', translate: 'true' } },
+    { method: 'GET', path: '/v1/transcript', query: { video_id: 'dQw4w9WgXcQ', language: 'es', translate: 'false' } },
+  ]);
+});
+
+test('jobs.create forwards explicit translate values unchanged in the body', async () => {
+  const calls = [];
+  const client = new ScriptHaul({
+    apiKey: 'sh_test_unit_fixture',
+    fetch: async (url, init) => {
+      calls.push({ path: new URL(url).pathname, method: init.method, body: JSON.parse(init.body) });
+      return json(202, { ok: true, job: { id: 'job-fixture', status: 'pending' } });
+    },
+  });
+  for (const translate of [true, false]) {
+    const params = { input: 'https://youtube.com/@fixture', language: 'es', translate };
+    await client.jobs.create(params);
+    assert.deepEqual(calls.at(-1), { path: '/v1/jobs', method: 'POST', body: params });
+  }
+  assert.equal(calls.length, 2);
+});
+
+test('transcripts and jobs omit translate when it is not provided', async () => {
+  const calls = [];
+  const client = new ScriptHaul({
+    apiKey: 'sh_test_unit_fixture',
+    fetch: async (url, init) => {
+      calls.push({ url: new URL(url), body: init.body === undefined ? undefined : JSON.parse(init.body) });
+      return json(200, { ok: true, job: { id: 'job-fixture', status: 'pending' } });
+    },
+  });
+  await client.transcript('dQw4w9WgXcQ');
+  await client.jobs.create({ input: 'https://youtube.com/@fixture' });
+  assert.equal(calls.length, 2);
+  assert.deepEqual(Object.fromEntries(calls[0].url.searchParams), { video_id: 'dQw4w9WgXcQ' });
+  assert.equal(calls[0].url.searchParams.has('translate'), false);
+  assert.equal(calls[0].body, undefined);
+  assert.equal(calls[1].url.search, '');
+  assert.deepEqual(calls[1].body, { input: 'https://youtube.com/@fixture' });
+  assert.equal(Object.hasOwn(calls[1].body, 'translate'), false);
+});
+
 test('raises the exact server error type with request_id', async () => {
   const client = new ScriptHaul({
     apiKey: 'sh_test_unit_fixture',
