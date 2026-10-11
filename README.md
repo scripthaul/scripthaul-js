@@ -6,7 +6,7 @@ Dependency-free ScriptHaul API client for Node 18.20+ and modern runtimes with `
 npm install scripthaul
 ```
 
-Until the first npm release, install straight from GitHub: `npm install github:scripthaul/scripthaul-js`. Issues and pull requests are welcome in this repository; the API itself is documented at [api.scripthaul.com/docs](https://api.scripthaul.com/docs).
+Issues and pull requests are welcome in this repository; the API itself is documented at [api.scripthaul.com/docs](https://api.scripthaul.com/docs).
 
 ```js
 import ScriptHaul from 'scripthaul';
